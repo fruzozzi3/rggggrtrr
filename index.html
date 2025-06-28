@@ -349,43 +349,43 @@
             backdrop-filter: blur(10px);
         }
 
+        /* --- НАБОР ОКОНЧАТЕЛЬНЫХ ИСПРАВЛЕНИЙ ДЛЯ РУЛЕТКИ --- */
         .roulette-track {
             display: flex;
             align-items: center;
-            height: 80px;
+            height: 110px;
             transition: transform 5s cubic-bezier(0.23, 1, 0.32, 1);
             position: absolute;
             left: 0;
-            top: 20px; /* (120px container height - 80px item height) / 2 */
+            top: 5px;
         }
 
         .roulette-item {
-            min-width: 80px;
-            height: 80px;
+            width: 90px;
+            min-height: 100px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             border: 2px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            margin: 0 10px;
+            margin: 0 5px;
+            padding: 8px 5px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .roulette-item.winner {
+            transform: scale(1.1);
+            min-height: 105px;
             background: linear-gradient(45deg, #00d4ff, #0099cc);
             border-color: #00d4ff;
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-            transform: scale(1.1);
         }
 
         .prize-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-            display: block;
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
         }
 
         .prize-icon img {
@@ -394,12 +394,31 @@
             object-fit: contain;
         }
 
-
         .prize-value {
             font-weight: bold;
             color: white;
             font-size: 12px;
+            text-align: center;
+            line-height: 1.2;
+            width: 100%;
+            word-wrap: break-word;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        .prize-price-tag {
+            font-size: 11px;
+            font-weight: bold;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 3px 8px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* --- КОНЕЦ ИСПРАВЛЕНИЙ ДЛЯ РУЛЕТКИ --- */
+
 
         .roulette-pointer {
             position: absolute;
@@ -495,7 +514,7 @@
             50% { opacity: 0.7; }
         }
 
-        /* --- NEW: Profile Header Styles --- */
+        /* --- Стили для профиля --- */
         .profile-header {
             display: flex;
             align-items: center;
@@ -523,81 +542,33 @@
             margin: 5px 0 0 0;
         }
 
-        .roulette-track {
-            display: flex;
-            align-items: center; /* Это выравнивает карточки по центру дорожки */
-            height: 110px; /* Увеличиваем высоту самой дорожки */
-            transition: transform 5s cubic-bezier(0.23, 1, 0.32, 1);
-            position: absolute;
-            left: 0;
-            top: 5px;
-        }
-
-        .roulette-item {
-            width: 90px; /* Ширина остается фиксированной */
-            min-height: 100px; /* Задаем минимальную высоту, но позволяем расти */
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            margin: 0 5px;
-            padding: 8px 5px; /* Корректируем внутренние отступы */
-            box-sizing: border-box;
-
-            /* КЛЮЧЕВЫЕ ИЗМЕНЕНИЯ: */
-            display: flex;
-            flex-direction: column;
-            /* Распределяет пространство: первый элемент к верху, последний к низу */
-            justify-content: space-between;
-        }
-
-        .roulette-item.winner {
-            transform: scale(1.1);
-            min-height: 105px; /* Немного увеличиваем при победе */
-            background: linear-gradient(45deg, #00d4ff, #0099cc);
-            border-color: #00d4ff;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-        }
-
-        .prize-icon {
-            width: 38px;
-            height: 38px;
-            /* Убираем margin, так как space-between сам расставит отступы */
-        }
-
-        .prize-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        /* Название теперь само является flex-контейнером, чтобы центрировать текст */
-        .prize-value {
-            font-weight: bold;
+        /* --- Стили для кнопки вывода --- */
+        .withdraw-btn {
+            background: linear-gradient(45deg, #f09819, #ff5858);
+            border: none;
+            border-radius: 20px;
+            padding: 15px 40px;
             color: white;
-            font-size: 12px;
-            text-align: center;
-            line-height: 1.2;
-            width: 100%;
-            word-wrap: break-word; /* Для переноса длинных слов */
-
-            /* КЛЮЧЕВЫЕ ИЗМЕНЕНИЯ: */
-            flex-grow: 1; /* Позволяем этому блоку занять все свободное место */
-            display: flex;
-            align-items: center;    /* Центрируем текст по вертикали внутри блока */
-            justify-content: center;/* Центрируем текст по горизонтали */
-        }
-
-        .prize-price-tag {
-            font-size: 11px;
+            font-size: 16px;
             font-weight: bold;
-            color: #ffffff;
-            background: rgba(0, 0, 0, 0.25);
-            padding: 3px 8px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Убираем margin, так как space-between сам расставит отступы */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(240, 152, 25, 0.3);
         }
+        .withdraw-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(240, 152, 25, 0.4);
+        }
+        .withdraw-btn:disabled {
+            background: #555;
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
     </style>
 </head>
 <body>
@@ -666,6 +637,10 @@
              <div id="inventoryGrid" class="inventory-grid">
                  <div class="inventory-placeholder">Тут пока пусто. Откройте кейс, чтобы выиграть свой первый подарок!</div>
              </div>
+
+            <button id="withdrawBtn" class="withdraw-btn" onclick="initiateWithdrawal()">
+                Вывести подарки
+            </button>
         </div>
 
     <div class="bottom-nav">
@@ -743,7 +718,6 @@
         '🎨': 'images/pani.png'
     };
 
-    // --- ОБНОВЛЕНО: Добавлены цены (price) для каждого подарка ---
     const cases = {
         free: {
             title: 'Бесплатный кейс',
@@ -762,7 +736,38 @@
         }
     };
 
-    // --- NEW: Function to switch between views (Home and Profile) ---
+    // --- Новая функция для вывода подарков ---
+    function initiateWithdrawal() {
+        if (userInventory.length === 0) {
+            tg.showAlert("У вас нет подарков для вывода. Сначала выиграйте что-нибудь!");
+            return;
+        }
+
+        // ‼️ ЗАМЕНИТЕ 'ВАШ_ЛОГИН_БОТА' НА РЕАЛЬНЫЙ ЛОГИН ВАШЕГО БОТА БЕЗ @
+        const botUsername = 'ВАШ_ЛОГИН_БОТА';
+
+        if (botUsername === 'ВАШ_ЛОГИН_БОТА') {
+            tg.showAlert("Ошибка: не указан логин бота в коде. Обратитесь к администратору.");
+            return;
+        }
+
+        const url = `https://t.me/${botUsername}?startattach=business`;
+        tg.openTelegramLink(url);
+    }
+
+    // --- Функция для обновления состояния кнопки вывода ---
+    function updateWithdrawButtonState() {
+        const withdrawBtn = document.getElementById('withdrawBtn');
+        if (userInventory.length > 0) {
+            withdrawBtn.disabled = false;
+            withdrawBtn.textContent = `Вывести подарки (${userInventory.length} шт.)`;
+        } else {
+            withdrawBtn.disabled = true;
+            withdrawBtn.textContent = 'Нет подарков для вывода';
+        }
+    }
+
+
     function showView(viewId) {
         document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
@@ -775,48 +780,38 @@
         }
     }
 
-    // --- NEW: Function to render inventory items ---
     function renderInventory() {
         const inventoryGrid = document.getElementById('inventoryGrid');
-        inventoryGrid.innerHTML = ''; // Clear previous items
+        inventoryGrid.innerHTML = '';
 
         if (userInventory.length === 0) {
             inventoryGrid.innerHTML = '<div class="inventory-placeholder">Тут пока пусто. Откройте кейс, чтобы выиграть свой первый подарок!</div>';
-            return;
+        } else {
+            userInventory.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'inventory-item';
+                const prizeImageSrc = prizeImages[item.icon] || '';
+                itemDiv.innerHTML = `
+                    <img src="${prizeImageSrc}" alt="${item.name}" class="inventory-item-image">
+                    <div class="inventory-item-name">${item.name}</div>
+                `;
+                inventoryGrid.appendChild(itemDiv);
+            });
         }
-
-        userInventory.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'inventory-item';
-
-            const prizeImageSrc = prizeImages[item.icon] || ''; // Get image URL from map
-
-            itemDiv.innerHTML = `
-                <img src="${prizeImageSrc}" alt="${item.name}" class="inventory-item-image">
-                <div class="inventory-item-name">${item.name}</div>
-            `;
-            inventoryGrid.appendChild(itemDiv);
-        });
+        // Обновляем состояние кнопки после каждого изменения инвентаря
+        updateWithdrawButtonState();
     }
 
-    // --- NEW: Function to load and display user profile data ---
     function loadUserProfile() {
-        // Accessing user data from Telegram
         const user = tg.initDataUnsafe?.user;
-
         if (user) {
-            // Update avatar
             const avatarEl = document.getElementById('userAvatar');
             if (user.photo_url) {
                 avatarEl.src = user.photo_url;
             }
-
-            // Update name (combining first and last name)
             const nameEl = document.getElementById('userName');
             const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ');
             nameEl.textContent = fullName || user.username || 'Пользователь';
-
-            // Update ID
             const idEl = document.getElementById('userId');
             idEl.textContent = `ID: ${user.id}`;
         }
@@ -840,20 +835,18 @@
         document.getElementById('disabledModal').style.display = 'none';
     }
 
-    // Renders the prize icon (image or emoji)
     function renderPrizeIcon(icon) {
         const imageUrl = prizeImages[icon];
         if (imageUrl) {
             return `<img src="${imageUrl}" alt="Prize">`;
         }
-        return icon; // Fallback to emoji if no image
+        return icon;
     }
 
-    // --- ОБНОВЛЕНО: генерация рулетки теперь включает цену ---
     function generateRouletteItems(prizes) {
         const track = document.getElementById('rouletteTrack');
         track.innerHTML = '';
-        track.style.transform = 'translateX(0)'; // Reset position
+        track.style.transform = 'translateX(0)';
 
         const extendedPrizes = [];
         for (let i = 0; i < 10; i++) {
@@ -863,7 +856,6 @@
         extendedPrizes.forEach((prize) => {
             const item = document.createElement('div');
             item.className = 'roulette-item';
-            // Добавили блок с классом prize-price-tag для отображения цены
             item.innerHTML = `
                 <span class="prize-icon">${renderPrizeIcon(prize.icon)}</span>
                 <div class="prize-value">${prize.name}</div>
@@ -875,14 +867,11 @@
 
     function openCase(caseType, title) {
         if (isSpinning) return;
-
         currentCase = cases[caseType];
         document.getElementById('modalTitle').textContent = title;
         document.getElementById('caseModal').style.display = 'flex';
-
         const codeInput = document.getElementById('secretCode');
         codeInput.style.display = currentCase.needsCode ? 'block' : 'none';
-
         generateRouletteItems(currentCase.prizes);
     }
 
@@ -901,78 +890,61 @@
 
     function closeWinModal() {
         document.getElementById('winModal').style.display = 'none';
-
         const spinButton = document.getElementById('spinButton');
         isSpinning = false;
         spinButton.disabled = false;
         spinButton.textContent = 'Крутить';
         document.getElementById('secretCode').value = '';
-
         closeModal();
     }
 
     function spinRoulette() {
         if (isSpinning || !currentCase) return;
-
         if (currentCase.needsCode && !document.getElementById('secretCode').value) {
             tg.showAlert('❌ Введите секретный код!');
             return;
         }
-
         if (!currentCase.needsCode && userBalance < currentCase.cost) {
             tg.showAlert('❌ Недостаточно средств!');
             return;
         }
-
         isSpinning = true;
         const spinButton = document.getElementById('spinButton');
         spinButton.disabled = true;
         spinButton.textContent = 'Крутим...';
-
         document.querySelectorAll('.roulette-item').forEach(item => {
             item.classList.remove('winner');
         });
-
         const wonPrizeIndex = Math.floor(Math.random() * currentCase.prizes.length);
         const wonPrize = currentCase.prizes[wonPrizeIndex];
-
         const track = document.getElementById('rouletteTrack');
         const items = track.children;
         const itemWidth = items[0].offsetWidth;
         const itemMargin = parseInt(window.getComputedStyle(items[0]).marginRight) * 2;
         const totalItemWidth = itemWidth + itemMargin;
-
         const middleOfReel = Math.floor(items.length / 2);
         const targetItemIndex = middleOfReel - (middleOfReel % currentCase.prizes.length) + wonPrizeIndex;
         const targetItem = items[targetItemIndex];
-
         const rouletteContainer = document.getElementById('rouletteContainer');
         const containerCenter = rouletteContainer.offsetWidth / 2;
         const targetItemCenter = targetItem.offsetLeft + (totalItemWidth / 2);
-
         const finalTranslateX = containerCenter - targetItemCenter;
-
         track.style.transform = `translateX(${finalTranslateX}px)`;
-
         setTimeout(() => {
             targetItem.classList.add('winner');
-
             userInventory.push(wonPrize);
-            renderInventory();
-
+            renderInventory(); // Эта функция теперь также вызовет updateWithdrawButtonState
             setTimeout(() => {
                 showWinModal(wonPrize);
             }, 1000);
-
         }, 5000);
     }
 
-    // --- ИСПРАВЛЕНО: Добавлен вызов loadUserProfile() ---
     document.addEventListener('DOMContentLoaded', () => {
         connectWallet();
-        loadUserProfile(); // <-- ВЫЗОВ ФУНКЦИИ, КОТОРОГО НЕ БЫЛО
+        loadUserProfile();
         showView('homeView');
-        renderInventory();
+        renderInventory(); // Первичный вызов для установки начального состояния кнопки
     });
 
     window.onclick = function(event) {
@@ -986,3 +958,5 @@
         }
     }
 </script>
+</body>
+</html>
