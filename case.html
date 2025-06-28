@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gift Roulette Bot</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 0;
+        }
+
+        .wallet-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .wallet-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .balance-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .balance {
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .ton-icon {
+            width: 24px;
+            height: 24px;
+            background: #0088cc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 15px;
+            padding: 15px;
+            min-width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .case-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 0;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            height: 160px;
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .case-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .case-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .case-card.free {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+        }
+
+        .case-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .case-card.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .case-image {
+            width: 100%;
+            height: 100px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+
+        .case-content {
+            padding: 15px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .case-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .case-price {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .bottom-nav {
+            background: rgba(139, 92, 246, 0.3);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 360px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item {
+            text-align: center;
+            color: white;
+            text-decoration: none;
+            padding: 5px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 25px;
+            padding: 30px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Roulette container */
+        .roulette-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+            height: 120px;
+            backdrop-filter: blur(10px);
+        }
+
+        .roulette-track {
+            display: flex;
+            align-items: center;
+            height: 80px;
+            transition: transform 5s cubic-bezier(0.23, 1, 0.32, 1);
+            gap: 20px;
+        }
+
+        .roulette-item {
+            min-width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .roulette-item.winner {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .prize-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .prize-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+
+        .prize-value {
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+        }
+
+        .roulette-pointer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 3px;
+            height: 108px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border-radius: 2px;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .roulette-pointer::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .roulette-pointer::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .code-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            color: white;
+            font-size: 16px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .code-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .spin-btn {
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            border: none;
+            border-radius: 20px;
+            padding: 15px 40px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .spin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+        }
+
+        .spin-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .disabled-notice {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="wallet-btn" onclick="connectWallet()">Connect Wallet</button>
+            <div class="wallet-section">
+                <div class="balance-section">
+                    <div class="balance" id="balance">0.00</div>
+                    <div class="ton-icon">T</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="action-btn floating-animation" style="animation-delay: 0s;">🎁</button>
+            <button class="action-btn floating-animation" style="animation-delay: 0.2s;">💻</button>
+            <button class="action-btn floating-animation" style="animation-delay: 0.4s;">🎯</button>
+            <button class="action-btn floating-animation" style="animation-delay: 0.6s;">🔍</button>
+            <button class="action-btn floating-animation" style="animation-delay: 0.8s;">🎸</button>
+        </div>
+
+        <div class="cases-grid">
+            <div class="case-card free" onclick="openCase('free', 'Бесплатный кейс')">
+                <div class="case-image" style="background-image: url('\images/freecase.webp');">
+                    <!-- Замените FREE_CASE_IMAGE_URL_HERE на URL вашего изображения -->
+                </div>
+                <div class="case-content">
+                    <div class="case-title">Бесплатный кейс</div>
+                    <div class="case-price">Бесплатно</div>
+                </div>
+            </div>
+            <div class="case-card disabled" onclick="showDisabledNotice('Премиум кейс')">
+                <div class="case-image" style="background-image: url('PREMIUM_CASE_IMAGE_URL_HERE');">
+                    <!-- Замените PREMIUM_CASE_IMAGE_URL_HERE на URL вашего изображения -->
+                </div>
+                <div class="case-content">
+                    <div class="case-title">Премиум кейс</div>
+                    <div class="case-price">10 $TON</div>
+                </div>
+            </div>
+            <div class="case-card disabled" onclick="showDisabledNotice('Редкий кейс')">
+                <div class="case-image" style="background-image: url('RARE_CASE_IMAGE_URL_HERE');">
+                    <!-- Замените RARE_CASE_IMAGE_URL_HERE на URL вашего изображения -->
+                </div>
+                <div class="case-content">
+                    <div class="case-title">Редкий кейс</div>
+                    <div class="case-price">25 $TON</div>
+                </div>
+            </div>
+            <div class="case-card disabled" onclick="showDisabledNotice('Легендарный кейс')">
+                <div class="case-image" style="background-image: url('LEGENDARY_CASE_IMAGE_URL_HERE');">
+                    <!-- Замените LEGENDARY_CASE_IMAGE_URL_HERE на URL вашего изображения -->
+                </div>
+                <div class="case-content">
+                    <div class="case-title">Легендарный</div>
+                    <div class="case-price">50 $TON</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                Главная
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👤</span>
+                Профиль
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="caseModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 id="modalTitle">Бесплатный кейс</h2>
+
+            <div class="roulette-container">
+                <div class="roulette-pointer"></div>
+                <div class="roulette-track" id="rouletteTrack">
+                    <!-- Roulette items will be generated here -->
+                </div>
+            </div>
+
+            <p>💡 Чтобы открыть этот кейс, введите секретный код</p>
+
+            <input type="text" class="code-input" placeholder="Секретный код" id="secretCode">
+
+            <button class="spin-btn" onclick="spinRoulette()" id="spinButton">
+                <span id="spinText">Крутить</span>
+                <span id="spinCost">0 🔷</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Disabled Notice Modal -->
+    <div id="disabledModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeDisabledModal()">&times;</button>
+            <h2 id="disabledTitle">Кейс временно недоступен</h2>
+            <div class="disabled-notice">
+                ⚠️ Данный кейс временно не работает
+            </div>
+            <p>Мы работаем над добавлением новых кейсов. Скоро они станут доступными!</p>
+            <button class="spin-btn" onclick="closeDisabledModal()" style="background: linear-gradient(45deg, #ff6b6b, #ee5a52);">
+                Понятно
+            </button>
+        </div>
+    </div>
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.ready(); // сообщает Telegram, что Web App готов
+    tg.expand(); // разворачивает WebApp на максимум
+</script>
+    <script>
+        let userBalance = 0;
+        let currentCase = null;
+        let isSpinning = false;
+
+        // Prize images mapping - можно заменить эмодзи на URLs изображений
+        const prizeImages = {
+            '🔮': 'images/crystal.png', // Замените на URL изображения, например: '/images/crystal.png'
+            '🌸': 'images/sakura.png', // Замените на URL изображения, например: '/images/flower.png'
+            '💎': 'images/ring.png', // Замените на URL изображения, например: '/images/diamond.png'
+            '🏆': 'images/ringo.png', // Замените на URL изображения, например: '/images/trophy.png'
+            '⭐': 'images/bear.png', // Замените на URL изображения, например: '/images/star.png'
+            '🎯': 'images/happy.png', // Замените на URL изображения, например: '/images/target.png'
+            '🎪': 'images/love.png', // Замените на URL изображения, например: '/images/circus.png'
+            '🎨': 'images/pani.png'  // Замените на URL изображения, например: '/images/palette.png'
+        };
+
+        // Sample case data
+        const cases = {
+            free: {
+                title: 'Бесплатный кейс',
+                cost: 0,
+                prizes: [
+                    { value: 10.7, icon: '🔮' },
+                    { value: 5.77, icon: '🌸' },
+                    { value: 34.16, icon: '💎' },
+                    { value: 20.64, icon: '🏆' },
+                    { value: 25.67, icon: '⭐' },
+                    { value: 2.2, icon: '🎯' },
+                    { value: 11.57, icon: '🎪' },
+                    { value: 4.69, icon: '🎨' }
+                ],
+                needsCode: true
+            }
+        };
+
+        function connectWallet() {
+            // Баланс остается нулевым
+            userBalance = 0;
+            document.getElementById('balance').textContent = userBalance.toFixed(2);
+
+            document.getElementById('balance').style.animation = 'spin 0.5s ease-in-out';
+            setTimeout(() => {
+                document.getElementById('balance').style.animation = '';
+            }, 500);
+        }
+
+        function showDisabledNotice(caseTitle) {
+            document.getElementById('disabledTitle').textContent = caseTitle;
+            document.getElementById('disabledModal').style.display = 'block';
+        }
+
+        function closeDisabledModal() {
+            document.getElementById('disabledModal').style.display = 'none';
+        }
+
+        function renderPrizeIcon(iconData) {
+    if (typeof iconData === 'string' && /\.(png|webp|jpg|jpeg|gif)$/i.test(iconData)) {
+        return `<img src="${iconData}" alt="Prize">`;
+    }
+    return iconData;
+}
+
+
+        function generateRouletteItems(prizes) {
+            const track = document.getElementById('rouletteTrack');
+            track.innerHTML = '';
+
+            // Создаем множественные копии призов для эффекта бесконечной ленты
+            const extendedPrizes = [];
+            for (let i = 0; i < 8; i++) {
+                extendedPrizes.push(...prizes);
+            }
+
+            extendedPrizes.forEach((prize, index) => {
+                const item = document.createElement('div');
+                item.className = 'roulette-item';
+                item.dataset.index = index;
+
+                const iconData = prizeImages[prize.icon] || prize.icon;
+
+                item.innerHTML = `
+                    <span class="prize-icon">${renderPrizeIcon(iconData)}</span>
+                    <div class="prize-value">${prize.value.toFixed(2)}</div>
+                `;
+
+                track.appendChild(item);
+            });
+        }
+
+        function openCase(caseType, title) {
+            if (isSpinning) return;
+
+            currentCase = cases[caseType];
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('caseModal').style.display = 'block';
+
+            const codeInput = document.getElementById('secretCode');
+            const spinButton = document.getElementById('spinButton');
+            const spinCost = document.getElementById('spinCost');
+
+            if (currentCase.needsCode) {
+                codeInput.style.display = 'block';
+                spinCost.textContent = '0 🔷';
+            } else {
+                codeInput.style.display = 'none';
+                spinCost.textContent = currentCase.cost + ' 🔷';
+            }
+
+            generateRouletteItems(currentCase.prizes);
+        }
+
+        function closeModal() {
+            if (isSpinning) return;
+            document.getElementById('caseModal').style.display = 'none';
+            currentCase = null;
+        }
+
+        function spinRoulette() {
+            if (isSpinning) return;
+
+            const secretCode = document.getElementById('secretCode').value;
+            const spinButton = document.getElementById('spinButton');
+            const track = document.getElementById('rouletteTrack');
+
+            // Validate requirements
+            if (currentCase.needsCode && !secretCode) {
+                alert('❌ Введите секретный код!');
+                return;
+            }
+
+            if (!currentCase.needsCode && userBalance < currentCase.cost) {
+                alert('❌ Недостаточно средств!');
+                return;
+            }
+
+            isSpinning = true;
+            spinButton.disabled = true;
+            spinButton.style.opacity = '0.5';
+            document.getElementById('spinText').textContent = 'Крутим...';
+
+            // Reset previous winner
+            document.querySelectorAll('.roulette-item').forEach(item => {
+                item.classList.remove('winner');
+            });
+
+            // Select random prize
+            const wonPrizeIndex = Math.floor(Math.random() * currentCase.prizes.length);
+            const wonPrize = currentCase.prizes[wonPrizeIndex];
+
+            // Calculate spin distance
+            const itemWidth = 100; // 80px width + 20px gap
+            const containerWidth = 350; // Modal width
+            const centerOffset = containerWidth / 2;
+
+            // Find the target item in the extended array (prefer items in the middle section)
+            const targetItems = document.querySelectorAll('.roulette-item');
+            let targetItem = null;
+            const middleStart = Math.floor(targetItems.length / 3);
+            const middleEnd = Math.floor(targetItems.length * 2 / 3);
+
+            for (let i = middleStart; i < middleEnd; i++) {
+                const item = targetItems[i];
+                const prizeIndex = i % currentCase.prizes.length;
+                if (prizeIndex === wonPrizeIndex) {
+                    targetItem = item;
+                    break;
+                }
+            }
+
+            if (targetItem) {
+                const itemRect = targetItem.getBoundingClientRect();
+                const trackRect = track.getBoundingClientRect();
+                const itemPosition = itemRect.left - trackRect.left + (itemRect.width / 2);
+                const finalPosition = centerOffset - itemPosition;
+
+                // Add multiple rotations for effect - увеличена продолжительность
+                const spins = 10;
+                const totalDistance = finalPosition - (spins * trackRect.width);
+
+                track.style.transform = `translateX(${totalDistance}px)`;
+
+                setTimeout(() => {
+                    targetItem.classList.add('winner');
+
+
+                    // Show result
+                    setTimeout(() => {
+                        alert(`🎉 Поздравляем!\nВы выиграли: ${wonPrize.value.toFixed(2)} `);
+
+                        // Reset everything
+                        isSpinning = false;
+                        spinButton.disabled = false;
+                        spinButton.style.opacity = '1';
+                        document.getElementById('spinText').textContent = 'Крутить';
+                        document.getElementById('secretCode').value = '';
+                        track.style.transform = 'translateX(0)';
+
+                        closeModal();
+                    }, 1000);
+
+                }, 5000); // Увеличено время ожидания до 5 секунд
+            }
+        }
+
+        // Initialize with zero balance
+        setTimeout(() => {
+            connectWallet();
+        }, 1000);
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('caseModal');
+            const disabledModal = document.getElementById('disabledModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+            if (event.target === disabledModal) {
+                closeDisabledModal();
+            }
+        }
+    </script>
+</body>
+</html>
