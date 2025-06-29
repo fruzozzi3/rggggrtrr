@@ -379,6 +379,8 @@ body {
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.3s ease;
+    /* Добавьте это свойство */
+    align-items: center; /* Центрирует дочерние элементы по горизонтали */
 }
 
 .roulette-item.winner {
@@ -506,16 +508,17 @@ body {
 }
 
 .disabled-notice {
-    background: rgba(255, 107, 107, 0.1);
-    border: 1px solid rgba(255, 107, 107, 0.3);
+    background: transparent;
+    border: 1px solid rgba(255, 107, 107, 0.8);
     border-radius: 15px;
     padding: 15px;
     margin: 20px 0;
     text-align: center;
     font-weight: bold;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 20px rgba(255, 107, 107, 0.4); /* Красное свечение */
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
     animation: pulse 2s infinite;
+    cursor: pointer;
 }
 
 @keyframes pulse {
@@ -584,4 +587,33 @@ body {
     box-shadow: none;
     border-color: #555;
     color: #aaa;
+}
+/* --- Стили для кнопки "Новости" (синий вариант) --- */
+.news-btn {
+    display: block; /* Растягиваем кнопку на всю доступную ширину */
+    width: 100%;
+    /* Изменено на синий цвет, как у кнопки Spin */
+    background: rgba(0, 212, 255, 0.15); 
+    border: 1px solid #00d4ff;
+    border-radius: 20px;
+    padding: 20px;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none; /* Убираем подчеркивание у ссылки */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 30px; /* Отступ снизу */
+    /* Изменено на синее свечение */
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.4); 
+    backdrop-filter: blur(10px);
+}
+
+.news-btn:hover {
+    /* Усиленный синий фон при наведении */
+    background: rgba(0, 212, 255, 0.3);
+    transform: translateY(-5px); /* Эффект приподнимания при наведении */
+    /* Усиленное синее свечение */
+    box-shadow: 0 0 35px rgba(0, 212, 255, 0.6);
 }
