@@ -1,0 +1,587 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #000000; /* Глубокий черный фон */
+    color: #ffffff;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    padding-bottom: 100px; /* Место для нижней навигации */
+}
+
+/* --- Переключение видов --- */
+.view {
+    display: none; /* Все виды скрыты по умолчанию */
+}
+.view.active {
+    display: block; /* Активный вид отображается */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 15px 0;
+}
+
+.wallet-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.wallet-btn {
+    background: rgba(255, 255, 255, 0.05); /* Полупрозрачный фон */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: white;
+    font-size: 14px;
+    backdrop-filter: blur(15px); /* Эффект блюра */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); /* Легкое белое свечение */
+}
+
+.wallet-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.balance-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.balance {
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.ton-icon {
+    width: 24px;
+    height: 24px;
+    background: #0088cc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0 0 15px rgba(0, 136, 204, 0.7); /* Голубое свечение */
+}
+
+.quick-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    overflow-x: auto;
+    padding: 10px 0;
+}
+
+.action-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 15px;
+    min-width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); /* Фиолетовое свечение при наведении */
+}
+
+.cases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.case-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 0;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    height: 160px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.case-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.case-card:hover::before {
+    transform: translateX(100%);
+}
+
+.case-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2); /* Усиленное белое свечение */
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.case-card.free {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); /* Яркое голубое свечение для бесплатного кейса */
+}
+
+.case-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    backdrop-filter: blur(5px);
+}
+
+.case-card.disabled:hover {
+    transform: none;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.case-image {
+    width: 100%;
+    height: 100px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 20px 20px 0 0;
+    position: relative;
+}
+
+.case-content {
+    padding: 15px;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.case-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.case-price {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* --- Стили инвентаря --- */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+.inventory-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 10px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+.inventory-item-image {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+.inventory-item-name {
+    font-size: 12px;
+    font-weight: bold;
+    word-wrap: break-word;
+}
+.inventory-placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    margin-top: 50px;
+}
+
+.bottom-nav {
+    background: rgba(18, 18, 18, 0.7); /* Более темный полупрозрачный фон */
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 360px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 999;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.nav-item {
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.nav-item:hover, .nav-item.active {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.nav-icon {
+    font-size: 18px;
+    margin-bottom: 3px;
+    display: block;
+}
+
+/* Стили модального окна */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(15px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    position: relative;
+    background: rgba(20, 20, 30, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 30px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Модальное окно выигрыша */
+#winModal .modal-content {
+    padding-top: 50px;
+    box-shadow: 0 0 50px rgba(76, 175, 80, 0.4); /* Зеленое свечение для выигрыша */
+}
+#winModalImage {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+#winModalTitle {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+#winModalSubText {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 30px;
+}
+
+/* Контейнер рулетки */
+.roulette-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 20px 0;
+    margin: 20px 0;
+    overflow: hidden;
+    position: relative;
+    height: 120px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.roulette-track {
+    display: flex;
+    align-items: center;
+    height: 110px;
+    transition: transform 5s cubic-bezier(0.23, 1, 0.32, 1);
+    position: absolute;
+    left: 0;
+    top: 5px;
+}
+
+.roulette-item {
+    width: 90px;
+    min-height: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    margin: 0 5px;
+    padding: 8px 5px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+}
+
+.roulette-item.winner {
+    transform: scale(1.1);
+    min-height: 105px;
+    background: rgba(0, 212, 255, 0.2);
+    border-color: #00d4ff;
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.7); /* Свечение для победившего элемента */
+}
+
+.prize-icon {
+    width: 38px;
+    height: 38px;
+}
+
+.prize-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.prize-value {
+    font-weight: bold;
+    color: white;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.2;
+    width: 100%;
+    word-wrap: break-word;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prize-price-tag {
+    font-size: 11px;
+    font-weight: bold;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 3px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.roulette-pointer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3px;
+    height: 108px;
+    background: #ffffff;
+    border-radius: 2px;
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(255, 255, 255, 0.5); /* Яркое белое свечение */
+}
+
+.roulette-pointer::before, .roulette-pointer::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    background: #ffffff;
+    border-radius: 50%;
+}
+.roulette-pointer::before { top: -5px; }
+.roulette-pointer::after { bottom: -5px; }
+
+.code-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 15px;
+    color: white;
+    font-size: 16px;
+    margin: 20px 0;
+    backdrop-filter: blur(10px);
+}
+
+.code-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.spin-btn {
+    background: transparent;
+    border: 1px solid #00d4ff;
+    border-radius: 20px;
+    padding: 15px 40px;
+    color: #00d4ff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4); /* Голубое свечение */
+    backdrop-filter: blur(5px);
+}
+
+.spin-btn:hover {
+    background: rgba(0, 212, 255, 0.2);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.6);
+}
+
+.spin-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.floating-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.disabled-notice {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid rgba(255, 107, 107, 0.3);
+    border-radius: 15px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+    font-weight: bold;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(255, 107, 107, 0.4); /* Красное свечение */
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(255, 107, 107, 0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 20px rgba(255, 107, 107, 0.2); }
+}
+
+/* --- Стили для профиля --- */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+.profile-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+.profile-id {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 5px 0 0 0;
+}
+
+/* --- Стили для кнопки вывода --- */
+.withdraw-btn {
+    background: transparent;
+    border: 1px solid #f09819;
+    border-radius: 20px;
+    padding: 15px 40px;
+    color: #f09819;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 30px;
+    box-shadow: 0 0 20px rgba(240, 152, 25, 0.4); /* Оранжевое свечение */
+    backdrop-filter: blur(5px);
+}
+.withdraw-btn:hover {
+    background: rgba(240, 152, 25, 0.2);
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 0 30px rgba(240, 152, 25, 0.6);
+}
+.withdraw-btn:disabled {
+    background: #555;
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    border-color: #555;
+    color: #aaa;
+}
