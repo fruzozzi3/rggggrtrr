@@ -45,9 +45,9 @@ function initiateWithdrawal() {
     }
 
     // ‼️ ЗАМЕНИТЕ 'ВАШ_ЛОГИН_БОТА' НА РЕАЛЬНЫЙ ЛОГИН ВАШЕГО БОТА БЕЗ @
-    const botUsername = 'ВАШ_ЛОГИН_БОТА';
+    const botUsername = 'CaseRoulette_bot';
 
-    if (botUsername === 'ВАШ_ЛОГИН_БОТА') {
+    if (botUsername === 'CaseRoulette_bot') {
         tg.showAlert("Ошибка: не указан логин бота в коде. Обратитесь к администратору.");
         return;
     }
