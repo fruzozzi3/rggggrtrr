@@ -50,7 +50,7 @@ function initiateWithdrawal() {
     const commandPayload = 'with';
 
     // Формируем ссылку для перехода в личные сообщения с ботом
-    const url = `https://t.me/${botUsername}?with=${commandPayload}`;
+    const url = `https://t.me/${botUsername}?start=${commandPayload}`;
 
     // Открываем ссылку в Telegram
     tg.openTelegramLink(url);
