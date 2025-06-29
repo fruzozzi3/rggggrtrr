@@ -44,17 +44,18 @@ function initiateWithdrawal() {
         return;
     }
 
-    // ‼️ ЗАМЕНИТЕ 'ВАШ_ЛОГИН_БОТА' НА РЕАЛЬНЫЙ ЛОГИН ВАШЕГО БОТА БЕЗ @
+    // Имя пользователя бота, которому будет отправлена команда
     const botUsername = 'CaseRoulette_bot';
+    // Параметр для команды /start. Бот получит сообщение /start with
+    const commandPayload = 'with';
 
-    if (botUsername === 'CaseRoulette_bot') {
-        tg.showAlert("Ошибка: не указан логин бота в коде. Обратитесь к администратору.");
-        return;
-    }
+    // Формируем ссылку для перехода в личные сообщения с ботом
+    const url = `https://t.me/${botUsername}?start=${commandPayload}`;
 
-    const url = `https://t.me/${botUsername}?startattach=business`;
+    // Открываем ссылку в Telegram
     tg.openTelegramLink(url);
 }
+
 
 // --- Функция для обновления состояния кнопки вывода ---
 function updateWithdrawButtonState() {
