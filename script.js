@@ -249,7 +249,6 @@ function spinRoulette() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    connectWallet();
     loadUserProfile();
     showView('homeView');
     renderInventory(); // Первичный вызов для установки начального состояния кнопки
