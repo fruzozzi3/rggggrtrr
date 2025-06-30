@@ -25,14 +25,14 @@ const cases = {
         title: 'Бесплатный кейс',
         cost: 0,
         prizes: [
-            { name: 'Crystal Ball', icon: '🔮', price: 0.5 },
-            { name: 'Flow Sakura', icon: '🌸', price: 1 },
-            { name: 'Signet Ring', icon: '💎', price: 5 },
-            { name: 'Diamond Ring', icon: '🏆', price: 10 },
-            { name: 'Toy Bear', icon: '⭐', price: 2.5 },
-            { name: 'Happy Birthday', icon: '🎯', price: 1.5 },
-            { name: 'Love Potition', icon: '🎪', price: 3 },
-            { name: 'Jelly Bunny', icon: '🎨', price: 4 }
+            { name: 'Crystal Ball', icon: '🔮', price: 9.28 },
+            { name: 'Flow Sakura', icon: '🌸', price: 5.46 },
+            { name: 'Signet Ring', icon: '💎', price: 34.81 },
+            { name: 'Diamond Ring', icon: '🏆', price: 19.49 },
+            { name: 'Toy Bear', icon: '⭐', price: 25.86 },
+            { name: 'Happy Birthday', icon: '🎯', price: 2.2 },
+            { name: 'Love Potition', icon: '🎪', price: 10.68 },
+            { name: 'Jelly Bunny', icon: '🎨', price: 4.34 }
         ],
         needsCode: true
     }
