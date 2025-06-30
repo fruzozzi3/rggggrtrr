@@ -38,15 +38,17 @@ const cases = {
     }
 };
 
+// <-- ОБНОВЛЕНО: Добавлено сворачивание приложения и изменен стиль оповещения -->
 function initiateWithdrawal() {
     if (userInventory.length === 0) {
-        tg.showAlert("У вас нет подарков для вывода. Сначала выиграйте что-нибудь!");
+        showErrorModal('Инвентарь пуст', 'У вас нет подарков для вывода.', 'Сначала выиграйте что-нибудь, открыв кейс!');
         return;
     }
     const botUsername = 'CaseRoulette_bot';
     const commandPayload = 'with';
     const url = `https://t.me/${botUsername}?start=${commandPayload}`;
     tg.openTelegramLink(url);
+    tg.close(); // <-- Эта команда сворачивает мини-приложение
 }
 
 function updateWithdrawButtonState() {
@@ -106,7 +108,6 @@ function loadUserProfile() {
     }
 }
 
-// <-- НОВАЯ УНИВЕРСАЛЬНАЯ ФУНКЦИЯ для отображения ошибок в модальном окне -->
 function showErrorModal(title, notice, subtext) {
     document.getElementById('disabledTitle').textContent = title;
     document.getElementById('disabledNoticeText').innerHTML = notice;
@@ -114,7 +115,6 @@ function showErrorModal(title, notice, subtext) {
     document.getElementById('disabledModal').style.display = 'flex';
 }
 
-// <-- ОБНОВЛЕНО: теперь использует новую функцию showErrorModal -->
 function connectWallet() {
     showErrorModal(
         'Функция недоступна',
@@ -123,7 +123,6 @@ function connectWallet() {
     );
 }
 
-// <-- ОБНОВЛЕНО: теперь использует новую функцию showErrorModal -->
 function showDisabledNotice(caseTitle) {
     showErrorModal(
         caseTitle,
@@ -180,10 +179,12 @@ function closeModal() {
     currentCase = null;
 }
 
+// <-- ОБНОВЛЕНО: Изменен заголовок и подзаголовок в окне выигрыша -->
 function showWinModal(wonPrize) {
     const prizeImageSrc = prizeImages[wonPrize.icon] || '';
     document.getElementById('winModalImage').src = prizeImageSrc;
-    document.getElementById('winModalTitle').textContent = wonPrize.name;
+    document.getElementById('winModalTitle').textContent = `Вы выиграли: ${wonPrize.name}`;
+    document.getElementById('winModalSubText').textContent = 'Чтобы забрать свой приз, перейдите во вкладку "Профиль" и нажмите "Вывести подарки".';
     document.getElementById('winModal').style.display = 'flex';
 }
 
@@ -197,7 +198,6 @@ function closeWinModal() {
     closeModal();
 }
 
-// <-- ОБНОВЛЕНО: теперь использует новую функцию showErrorModal вместо tg.showAlert -->
 function spinRoulette() {
     if (isSpinning || !currentCase) return;
 
@@ -223,7 +223,6 @@ function spinRoulette() {
     }
 
     if (!currentCase.needsCode && userBalance < currentCase.cost) {
-        // Для платных кейсов можно оставить tg.showAlert или тоже перевести на showErrorModal
         showErrorModal('Ошибка', '❌ Недостаточно средств!', `На вашем балансе ${userBalance} TON, а требуется ${currentCase.cost} TON.`);
         return;
     }
