@@ -120,16 +120,22 @@ function loadUserProfile() {
 }
 
 function connectWallet() {
-    userBalance = 0;
-    document.getElementById('balance').textContent = userBalance.toFixed(2);
-    document.getElementById('balance').style.animation = 'spin 0.5s ease-in-out';
-    setTimeout(() => {
-        document.getElementById('balance').style.animation = '';
-    }, 500);
+    // Устанавливаем заголовок и тексты для модального окна кошелька
+    document.getElementById('disabledTitle').textContent = 'Функция недоступна';
+    document.getElementById('disabledNoticeText').innerHTML = '⚠️ Подключение кошелька находится в разработке';
+    document.getElementById('disabledSubText').textContent = 'Эта возможность появится после завершения бета-тестирования. Спасибо за ваше терпение!';
+    
+    // Показываем модальное окно
+    document.getElementById('disabledModal').style.display = 'flex';
 }
 
 function showDisabledNotice(caseTitle) {
+    // Устанавливаем стандартные тексты для модального окна кейсов
     document.getElementById('disabledTitle').textContent = caseTitle;
+    document.getElementById('disabledNoticeText').innerHTML = '⚠️ Данный кейс временно не работает';
+    document.getElementById('disabledSubText').textContent = 'Мы работаем над добавлением новых кейсов. Скоро они станут доступными!';
+    
+    // Показываем модальное окно
     document.getElementById('disabledModal').style.display = 'flex';
 }
 
