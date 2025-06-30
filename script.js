@@ -48,7 +48,7 @@ function initiateWithdrawal() {
     const commandPayload = 'with';
     const url = `https://t.me/${botUsername}?start=${commandPayload}`;
     tg.openTelegramLink(url);
-    tg.close(); // <-- Эта команда сворачивает мини-приложение
+    tg.collapse(); // <-- Эта команда сворачивает приложение
 }
 
 function updateWithdrawButtonState() {
