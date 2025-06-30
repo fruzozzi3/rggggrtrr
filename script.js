@@ -38,7 +38,7 @@ const cases = {
     }
 };
 
-// <-- ОБНОВЛЕНО: Добавлена задержка перед сворачиванием -->
+// <-- ОБНОВЛЕНО: Добавлено сворачивание приложения и изменен стиль оповещения -->
 function initiateWithdrawal() {
     if (userInventory.length === 0) {
         showErrorModal('Инвентарь пуст', 'У вас нет подарков для вывода.', 'Сначала выиграйте что-нибудь, открыв кейс!');
@@ -47,14 +47,8 @@ function initiateWithdrawal() {
     const botUsername = 'CaseRoulette_bot';
     const commandPayload = 'with';
     const url = `https://t.me/${botUsername}?start=${commandPayload}`;
-    
-    // Сначала открываем ссылку
     tg.openTelegramLink(url);
-    
-    // Добавляем небольшую задержку, чтобы команда сворачивания сработала стабильно
-    setTimeout(() => {
-        tg.collapse(); 
-    }, 100); // 100 миллисекунд будет достаточно
+    tg.close(); // <-- Эта команда сворачивает мини-приложение
 }
 
 function updateWithdrawButtonState() {
@@ -185,6 +179,7 @@ function closeModal() {
     currentCase = null;
 }
 
+// <-- ОБНОВЛЕНО: Изменен заголовок и подзаголовок в окне выигрыша -->
 function showWinModal(wonPrize) {
     const prizeImageSrc = prizeImages[wonPrize.icon] || '';
     document.getElementById('winModalImage').src = prizeImageSrc;
