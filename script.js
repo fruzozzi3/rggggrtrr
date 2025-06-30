@@ -249,11 +249,11 @@ function spinRoulette() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // connectWallet(); // Эту строку необходимо удалить или закомментировать
     loadUserProfile();
     showView('homeView');
     renderInventory(); // Первичный вызов для установки начального состояния кнопки
 });
-
 window.onclick = function(event) {
     const caseModal = document.getElementById('caseModal');
     const disabledModal = document.getElementById('disabledModal');
