@@ -6,6 +6,7 @@ let userBalance = 0;
 let userInventory = [];
 let currentCase = null;
 let isSpinning = false;
+let isFreeCaseCodeUsed = false; // <-- НОВАЯ ПЕРЕМЕННАЯ: отслеживает использование кода
 
 // Mapping prize icons to actual image files
 const prizeImages = {
@@ -120,22 +121,16 @@ function loadUserProfile() {
 }
 
 function connectWallet() {
-    // Устанавливаем заголовок и тексты для модального окна кошелька
     document.getElementById('disabledTitle').textContent = 'Функция недоступна';
     document.getElementById('disabledNoticeText').innerHTML = '⚠️ Подключение кошелька находится в разработке';
     document.getElementById('disabledSubText').textContent = 'Эта возможность появится после завершения бета-тестирования. Спасибо за ваше терпение!';
-    
-    // Показываем модальное окно
     document.getElementById('disabledModal').style.display = 'flex';
 }
 
 function showDisabledNotice(caseTitle) {
-    // Устанавливаем стандартные тексты для модального окна кейсов
     document.getElementById('disabledTitle').textContent = caseTitle;
     document.getElementById('disabledNoticeText').innerHTML = '⚠️ Данный кейс временно не работает';
     document.getElementById('disabledSubText').textContent = 'Мы работаем над добавлением новых кейсов. Скоро они станут доступными!';
-    
-    // Показываем модальное окно
     document.getElementById('disabledModal').style.display = 'flex';
 }
 
@@ -206,16 +201,43 @@ function closeWinModal() {
     closeModal();
 }
 
+// v-- ОБНОВЛЕННАЯ ФУНКЦИЯ --v
 function spinRoulette() {
     if (isSpinning || !currentCase) return;
-    if (currentCase.needsCode && !document.getElementById('secretCode').value) {
-        tg.showAlert('❌ Введите секретный код!');
-        return;
+
+    // Проверяем, нужен ли для кейса секретный код
+    if (currentCase.needsCode) {
+        const secretCode = document.getElementById('secretCode').value;
+
+        // Проверка на пустое поле
+        if (!secretCode) {
+            tg.showAlert('❌ Введите секретный код!');
+            return;
+        }
+
+        // Проверка, был ли код уже использован
+        if (isFreeCaseCodeUsed) {
+            tg.showAlert('❌ Этот код уже был использован!');
+            return;
+        }
+
+        // Проверка правильности кода (нечувствительно к регистру)
+        if (secretCode.toLowerCase() !== 'case') {
+            tg.showAlert('❌ Неверный секретный код!');
+            return;
+        }
+
+        // Если все проверки пройдены, помечаем код как использованный
+        isFreeCaseCodeUsed = true;
     }
+
+    // Стандартная проверка баланса для платных кейсов
     if (!currentCase.needsCode && userBalance < currentCase.cost) {
         tg.showAlert('❌ Недостаточно средств!');
         return;
     }
+
+    // Начало анимации рулетки
     isSpinning = true;
     const spinButton = document.getElementById('spinButton');
     spinButton.disabled = true;
@@ -241,19 +263,21 @@ function spinRoulette() {
     setTimeout(() => {
         targetItem.classList.add('winner');
         userInventory.push(wonPrize);
-        renderInventory(); // Эта функция теперь также вызовет updateWithdrawButtonState
+        renderInventory();
         setTimeout(() => {
             showWinModal(wonPrize);
         }, 1000);
     }, 5000);
 }
+// ^-- ОБНОВЛЕННАЯ ФУНКЦИЯ --^
+
 
 document.addEventListener('DOMContentLoaded', () => {
-    // connectWallet(); // Эту строку необходимо удалить или закомментировать
     loadUserProfile();
     showView('homeView');
-    renderInventory(); // Первичный вызов для установки начального состояния кнопки
+    renderInventory();
 });
+
 window.onclick = function(event) {
     const caseModal = document.getElementById('caseModal');
     const disabledModal = document.getElementById('disabledModal');
