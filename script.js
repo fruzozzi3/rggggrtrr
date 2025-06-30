@@ -6,7 +6,7 @@ let userBalance = 0;
 let userInventory = [];
 let currentCase = null;
 let isSpinning = false;
-let isFreeCaseCodeUsed = false; // <-- НОВАЯ ПЕРЕМЕННАЯ: отслеживает использование кода
+let isFreeCaseCodeUsed = false;
 
 // Mapping prize icons to actual image files
 const prizeImages = {
@@ -38,27 +38,17 @@ const cases = {
     }
 };
 
-// --- Новая функция для вывода подарков ---
 function initiateWithdrawal() {
     if (userInventory.length === 0) {
         tg.showAlert("У вас нет подарков для вывода. Сначала выиграйте что-нибудь!");
         return;
     }
-
-    // Имя пользователя бота, которому будет отправлена команда
     const botUsername = 'CaseRoulette_bot';
-    // Параметр для команды /start. Бот получит сообщение /start with
     const commandPayload = 'with';
-
-    // Формируем ссылку для перехода в личные сообщения с ботом
     const url = `https://t.me/${botUsername}?start=${commandPayload}`;
-
-    // Открываем ссылку в Telegram
     tg.openTelegramLink(url);
 }
 
-
-// --- Функция для обновления состояния кнопки вывода ---
 function updateWithdrawButtonState() {
     const withdrawBtn = document.getElementById('withdrawBtn');
     if (userInventory.length > 0) {
@@ -70,11 +60,9 @@ function updateWithdrawButtonState() {
     }
 }
 
-
 function showView(viewId) {
     document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
-
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     if (viewId === 'homeView') {
         document.getElementById('navHome').classList.add('active');
@@ -86,7 +74,6 @@ function showView(viewId) {
 function renderInventory() {
     const inventoryGrid = document.getElementById('inventoryGrid');
     inventoryGrid.innerHTML = '';
-
     if (userInventory.length === 0) {
         inventoryGrid.innerHTML = '<div class="inventory-placeholder">Тут пока пусто. Откройте кейс, чтобы выиграть свой первый подарок!</div>';
     } else {
@@ -101,7 +88,6 @@ function renderInventory() {
             inventoryGrid.appendChild(itemDiv);
         });
     }
-    // Обновляем состояние кнопки после каждого изменения инвентаря
     updateWithdrawButtonState();
 }
 
@@ -120,18 +106,30 @@ function loadUserProfile() {
     }
 }
 
-function connectWallet() {
-    document.getElementById('disabledTitle').textContent = 'Функция недоступна';
-    document.getElementById('disabledNoticeText').innerHTML = '⚠️ Подключение кошелька находится в разработке';
-    document.getElementById('disabledSubText').textContent = 'Эта возможность появится после завершения бета-тестирования. Спасибо за ваше терпение!';
+// <-- НОВАЯ УНИВЕРСАЛЬНАЯ ФУНКЦИЯ для отображения ошибок в модальном окне -->
+function showErrorModal(title, notice, subtext) {
+    document.getElementById('disabledTitle').textContent = title;
+    document.getElementById('disabledNoticeText').innerHTML = notice;
+    document.getElementById('disabledSubText').textContent = subtext;
     document.getElementById('disabledModal').style.display = 'flex';
 }
 
+// <-- ОБНОВЛЕНО: теперь использует новую функцию showErrorModal -->
+function connectWallet() {
+    showErrorModal(
+        'Функция недоступна',
+        '⚠️ Подключение кошелька находится в разработке',
+        'Эта возможность появится после завершения бета-тестирования. Спасибо за ваше терпение!'
+    );
+}
+
+// <-- ОБНОВЛЕНО: теперь использует новую функцию showErrorModal -->
 function showDisabledNotice(caseTitle) {
-    document.getElementById('disabledTitle').textContent = caseTitle;
-    document.getElementById('disabledNoticeText').innerHTML = '⚠️ Данный кейс временно не работает';
-    document.getElementById('disabledSubText').textContent = 'Мы работаем над добавлением новых кейсов. Скоро они станут доступными!';
-    document.getElementById('disabledModal').style.display = 'flex';
+    showErrorModal(
+        caseTitle,
+        '⚠️ Данный кейс временно не работает',
+        'Мы работаем над добавлением новых кейсов. Скоро они станут доступными!'
+    );
 }
 
 function closeDisabledModal() {
@@ -150,12 +148,10 @@ function generateRouletteItems(prizes) {
     const track = document.getElementById('rouletteTrack');
     track.innerHTML = '';
     track.style.transform = 'translateX(0)';
-
     const extendedPrizes = [];
     for (let i = 0; i < 10; i++) {
         extendedPrizes.push(...prizes);
     }
-
     extendedPrizes.forEach((prize) => {
         const item = document.createElement('div');
         item.className = 'roulette-item';
@@ -201,43 +197,37 @@ function closeWinModal() {
     closeModal();
 }
 
-// v-- ОБНОВЛЕННАЯ ФУНКЦИЯ --v
+// <-- ОБНОВЛЕНО: теперь использует новую функцию showErrorModal вместо tg.showAlert -->
 function spinRoulette() {
     if (isSpinning || !currentCase) return;
 
-    // Проверяем, нужен ли для кейса секретный код
     if (currentCase.needsCode) {
         const secretCode = document.getElementById('secretCode').value;
 
-        // Проверка на пустое поле
         if (!secretCode) {
-            tg.showAlert('❌ Введите секретный код!');
+            showErrorModal('Ошибка', '❌ Введите секретный код!', 'Поле для ввода кода не может быть пустым.');
             return;
         }
 
-        // Проверка, был ли код уже использован
         if (isFreeCaseCodeUsed) {
-            tg.showAlert('❌ Этот код уже был использован!');
+            showErrorModal('Код использован', '❌ Этот код уже был использован!', 'Вы можете использовать бесплатный кейс только один раз за сессию.');
             return;
         }
 
-        // Проверка правильности кода (нечувствительно к регистру)
         if (secretCode.toLowerCase() !== 'case') {
-            tg.showAlert('❌ Неверный секретный код!');
+            showErrorModal('Ошибка кода', '❌ Неверный секретный код!', 'Пожалуйста, проверьте правильность ввода и попробуйте снова.');
             return;
         }
 
-        // Если все проверки пройдены, помечаем код как использованный
         isFreeCaseCodeUsed = true;
     }
 
-    // Стандартная проверка баланса для платных кейсов
     if (!currentCase.needsCode && userBalance < currentCase.cost) {
-        tg.showAlert('❌ Недостаточно средств!');
+        // Для платных кейсов можно оставить tg.showAlert или тоже перевести на showErrorModal
+        showErrorModal('Ошибка', '❌ Недостаточно средств!', `На вашем балансе ${userBalance} TON, а требуется ${currentCase.cost} TON.`);
         return;
     }
 
-    // Начало анимации рулетки
     isSpinning = true;
     const spinButton = document.getElementById('spinButton');
     spinButton.disabled = true;
@@ -269,8 +259,6 @@ function spinRoulette() {
         }, 1000);
     }, 5000);
 }
-// ^-- ОБНОВЛЕННАЯ ФУНКЦИЯ --^
-
 
 document.addEventListener('DOMContentLoaded', () => {
     loadUserProfile();
