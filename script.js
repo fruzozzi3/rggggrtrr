@@ -146,29 +146,42 @@ function renderPrizeIcon(icon) {
 }
 
 // <-- ОБНОВЛЕНО: Логика для добавления "Ничего" в 4 раза чаще -->
+// <-- ОБНОВЛЕНО: Рулетка усеяна призом "Ничего" -->
 function generateRouletteItems(prizes) {
     const track = document.getElementById('rouletteTrack');
     track.innerHTML = '';
-    track.style.transition = 'none'; // Сброс анимации
+    track.style.transition = 'none'; 
     track.style.transform = 'translateX(0)';
 
-    // Создаем визуальный список, где "Ничего" встречается в 4 раза чаще
     const visualPrizes = [];
-    prizes.forEach(prize => {
-        if (prize.name === 'Ничего') {
-            // Добавляем "Ничего" четыре раза
-            visualPrizes.push(prize, prize, prize, prize);
-        } else {
-            // Остальные призы добавляем один раз
-            visualPrizes.push(prize);
-        }
-    });
+    // 1. Настраиваем частоту: сколько "Ничего" будет после КАЖДОГО реального приза.
+    // Можете поставить 10, 15 или любое другое число для нужного эффекта.
+    const nothingFrequency = 8; 
 
-    // Перемешиваем для случайного порядка
+    // 2. Отделяем настоящие призы от "пустышки"
+    const realPrizes = prizes.filter(p => p.name !== 'Ничего'); 
+    const nothingPrize = prizes.find(p => p.name === 'Ничего'); 
+
+    // 3. Создаем новый массив, где после каждого реального приза идет много "пустышек"
+    if (nothingPrize) {
+        realPrizes.forEach(realPrize => {
+            visualPrizes.push(realPrize); // Сначала добавляем реальный приз
+            for (let i = 0; i < nothingFrequency; i++) {
+                visualPrizes.push(nothingPrize); // Затем добавляем много "Ничего"
+            }
+        });
+    } else {
+        // Если вдруг "Ничего" не будет в списке призов, рулетка соберется из того, что есть
+        visualPrizes.push(...prizes);
+    }
+    
+    // Перемешиваем итоговый массив, чтобы порядок реальных призов был случайным
     visualPrizes.sort(() => Math.random() - 0.5);
 
+    // 4. Увеличиваем ленту рулетки в несколько раз для долгой прокрутки
     const extendedPrizes = [];
-    for (let i = 0; i < 15; i++) {
+    // Можно уменьшить количество циклов, так как лента и так уже стала очень длинной
+    for (let i = 0; i < 5; i++) { 
         extendedPrizes.push(...visualPrizes);
     }
 
