@@ -17,7 +17,8 @@ const prizeImages = {
     '⭐': 'images/bear.png',
     '🎯': 'images/happy.png',
     '🎪': 'images/love.png',
-    '🎨': 'images/pani.png'
+    '🎨': 'images/pani.png',
+    '💨': 'images/nothing.png' // Иконка для "Ничего" (можно создать пустое изображение)
 };
 
 const cases = {
@@ -25,6 +26,8 @@ const cases = {
         title: 'Бесплатный кейс',
         cost: 0,
         prizes: [
+            // <-- ОБНОВЛЕНО: Добавлен приз "Ничего" -->
+            { name: 'Ничего', icon: '💨', price: 0 },
             { name: 'Crystal Ball', icon: '🔮', price: 9.28 },
             { name: 'Flow Sakura', icon: '🌸', price: 5.46 },
             { name: 'Signet Ring', icon: '💎', price: 34.81 },
@@ -38,7 +41,6 @@ const cases = {
     }
 };
 
-// <-- ОБНОВЛЕНО: Добавлено сворачивание приложения и изменен стиль оповещения -->
 function initiateWithdrawal() {
     if (userInventory.length === 0) {
         showErrorModal('Инвентарь пуст', 'У вас нет подарков для вывода.', 'Сначала выиграйте что-нибудь, открыв кейс!');
@@ -48,7 +50,7 @@ function initiateWithdrawal() {
     const commandPayload = 'with';
     const url = `https://t.me/${botUsername}?start=${commandPayload}`;
     tg.openTelegramLink(url);
-    tg.close(); // <-- Эта команда сворачивает мини-приложение
+    tg.close();
 }
 
 function updateWithdrawButtonState() {
@@ -143,25 +145,42 @@ function renderPrizeIcon(icon) {
     return icon;
 }
 
+// <-- ОБНОВЛЕНО: Логика генерации рулетки для добавления "Ничего" в 2 раза чаще -->
 function generateRouletteItems(prizes) {
     const track = document.getElementById('rouletteTrack');
     track.innerHTML = '';
+    track.style.transition = 'none'; // Сброс анимации
     track.style.transform = 'translateX(0)';
+
+    // Создаем визуальный список призов, где "Ничего" встречается в 2 раза чаще
+    const visualPrizes = [];
+    prizes.forEach(prize => {
+        visualPrizes.push(prize);
+        if (prize.name === 'Ничего') {
+            visualPrizes.push(prize); // Добавляем "Ничего" второй раз
+        }
+    });
+
+    // Перемешиваем для случайного порядка
+    visualPrizes.sort(() => Math.random() - 0.5);
+
     const extendedPrizes = [];
-    for (let i = 0; i < 10; i++) {
-        extendedPrizes.push(...prizes);
+    for (let i = 0; i < 15; i++) { // Увеличил количество циклов для более длинной ленты
+        extendedPrizes.push(...visualPrizes);
     }
+
     extendedPrizes.forEach((prize) => {
         const item = document.createElement('div');
         item.className = 'roulette-item';
         item.innerHTML = `
             <span class="prize-icon">${renderPrizeIcon(prize.icon)}</span>
             <div class="prize-value">${prize.name}</div>
-            <div class="prize-price-tag">${prize.price} TON</div>
+            <div class="prize-price-tag">${prize.price > 0 ? prize.price + ' TON' : ''}</div>
         `;
         track.appendChild(item);
     });
 }
+
 
 function openCase(caseType, title) {
     if (isSpinning) return;
@@ -179,7 +198,6 @@ function closeModal() {
     currentCase = null;
 }
 
-// <-- ОБНОВЛЕНО: Изменен заголовок и подзаголовок в окне выигрыша -->
 function showWinModal(wonPrize) {
     const prizeImageSrc = prizeImages[wonPrize.icon] || '';
     document.getElementById('winModalImage').src = prizeImageSrc;
@@ -198,27 +216,24 @@ function closeWinModal() {
     closeModal();
 }
 
+// <-- ОБНОВЛЕНО: Полностью переработана логика вращения для плавности и гарантированного выигрыша -->
 function spinRoulette() {
     if (isSpinning || !currentCase) return;
 
     if (currentCase.needsCode) {
         const secretCode = document.getElementById('secretCode').value;
-
         if (!secretCode) {
             showErrorModal('Ошибка', '❌ Введите секретный код!', 'Поле для ввода кода не может быть пустым.');
             return;
         }
-
         if (isFreeCaseCodeUsed) {
             showErrorModal('Код использован', '❌ Этот код уже был использован!', 'Вы можете использовать этот код только один раз.');
             return;
         }
-
         if (secretCode.toLowerCase() !== 'case') {
             showErrorModal('Ошибка кода', '❌ Неверный секретный код!', 'Пожалуйста, проверьте правильность ввода и попробуйте снова.');
             return;
         }
-
         isFreeCaseCodeUsed = true;
     }
 
@@ -231,33 +246,63 @@ function spinRoulette() {
     const spinButton = document.getElementById('spinButton');
     spinButton.disabled = true;
     spinButton.textContent = 'Крутим...';
-    document.querySelectorAll('.roulette-item').forEach(item => {
-        item.classList.remove('winner');
-    });
-    const wonPrizeIndex = Math.floor(Math.random() * currentCase.prizes.length);
-    const wonPrize = currentCase.prizes[wonPrizeIndex];
+    document.querySelectorAll('.roulette-item').forEach(item => item.classList.remove('winner'));
+
+    // 1. Отфильтровываем "Ничего", чтобы пользователь всегда выигрывал реальный приз
+    const actualPrizes = currentCase.prizes.filter(p => p.name !== 'Ничего');
+    const wonPrize = actualPrizes[Math.floor(Math.random() * actualPrizes.length)];
+
     const track = document.getElementById('rouletteTrack');
-    const items = track.children;
+    const items = Array.from(track.children);
     const itemWidth = items[0].offsetWidth;
     const itemMargin = parseInt(window.getComputedStyle(items[0]).marginRight) * 2;
     const totalItemWidth = itemWidth + itemMargin;
-    const middleOfReel = Math.floor(items.length / 2);
-    const targetItemIndex = middleOfReel - (middleOfReel % currentCase.prizes.length) + wonPrizeIndex;
+
+    // 2. Находим выигрышный предмет в середине ленты для плавной остановки
+    // Ищем подальше от начала, чтобы анимация была длинной
+    const middleIndex = Math.floor(items.length / 2);
+    let targetItemIndex = -1;
+    for (let i = middleIndex; i < items.length; i++) {
+        if (items[i].querySelector('.prize-value').textContent === wonPrize.name) {
+            targetItemIndex = i;
+            break;
+        }
+    }
+    // Если вдруг не нашли (маловероятно), ищем с начала
+    if (targetItemIndex === -1) {
+        for (let i = 0; i < middleIndex; i++) {
+            if (items[i].querySelector('.prize-value').textContent === wonPrize.name) {
+                targetItemIndex = i;
+                break;
+            }
+        }
+    }
+
     const targetItem = items[targetItemIndex];
+    
+    // 3. Вычисляем позицию для остановки
     const rouletteContainer = document.getElementById('rouletteContainer');
     const containerCenter = rouletteContainer.offsetWidth / 2;
-    const targetItemCenter = targetItem.offsetLeft + (totalItemWidth / 2);
-    const finalTranslateX = containerCenter - targetItemCenter;
-    track.style.transform = `translateX(${finalTranslateX}px)`;
+    // Добавляем небольшое случайное смещение для большей естественности
+    const randomOffset = (Math.random() - 0.5) * (itemWidth * 0.6);
+    const targetPosition = targetItem.offsetLeft + (totalItemWidth / 2) - containerCenter + randomOffset;
+    
+    // 4. Запускаем плавную и долгую анимацию
+    const spinDuration = 7000; // 7 секунд
+    track.style.transition = `transform ${spinDuration}ms cubic-bezier(0.1, 0.5, 0.2, 1)`; // Плавное затухание
+    track.style.transform = `translateX(-${targetPosition}px)`;
+
+    // 5. По завершении анимации показываем результат
     setTimeout(() => {
         targetItem.classList.add('winner');
         userInventory.push(wonPrize);
         renderInventory();
         setTimeout(() => {
             showWinModal(wonPrize);
-        }, 1000);
-    }, 5000);
+        }, 1000); // Показать модальное окно через 1 сек после остановки
+    }, spinDuration);
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     loadUserProfile();
@@ -269,7 +314,7 @@ window.onclick = function(event) {
     const caseModal = document.getElementById('caseModal');
     const disabledModal = document.getElementById('disabledModal');
     if (event.target === caseModal) {
-        closeModal();
+        if (!isSpinning) closeModal();
     }
     if (event.target === disabledModal) {
         closeDisabledModal();
