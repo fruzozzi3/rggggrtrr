@@ -145,19 +145,22 @@ function renderPrizeIcon(icon) {
     return icon;
 }
 
-// <-- ОБНОВЛЕНО: Логика генерации рулетки для добавления "Ничего" в 2 раза чаще -->
+// <-- ОБНОВЛЕНО: Логика для добавления "Ничего" в 4 раза чаще -->
 function generateRouletteItems(prizes) {
     const track = document.getElementById('rouletteTrack');
     track.innerHTML = '';
     track.style.transition = 'none'; // Сброс анимации
     track.style.transform = 'translateX(0)';
 
-    // Создаем визуальный список призов, где "Ничего" встречается в 2 раза чаще
+    // Создаем визуальный список, где "Ничего" встречается в 4 раза чаще
     const visualPrizes = [];
     prizes.forEach(prize => {
-        visualPrizes.push(prize);
         if (prize.name === 'Ничего') {
-            visualPrizes.push(prize); // Добавляем "Ничего" второй раз
+            // Добавляем "Ничего" четыре раза
+            visualPrizes.push(prize, prize, prize, prize);
+        } else {
+            // Остальные призы добавляем один раз
+            visualPrizes.push(prize);
         }
     });
 
@@ -165,7 +168,7 @@ function generateRouletteItems(prizes) {
     visualPrizes.sort(() => Math.random() - 0.5);
 
     const extendedPrizes = [];
-    for (let i = 0; i < 15; i++) { // Увеличил количество циклов для более длинной ленты
+    for (let i = 0; i < 15; i++) {
         extendedPrizes.push(...visualPrizes);
     }
 
